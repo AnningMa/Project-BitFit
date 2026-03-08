@@ -11,7 +11,7 @@ from seaborn import heatmap
 from functools import reduce
 from torch.optim import Adam
 from datasets import load_dataset
-from transformers.optimization import AdamW
+from torch.optim import AdamW
 from scipy.stats import spearmanr, pearsonr
 from sklearn.metrics import f1_score, matthews_corrcoef, accuracy_score
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, AutoConfig
@@ -96,16 +96,15 @@ TASK_IS_BINARY = {
 }
 
 BIAS_LAYER_NAME_TO_LATEX = {
-    'attention.self.query.bias': '$\mathbf{b}_{q}^{\ell}$',
-    'attention.self.key.bias': '$\mathbf{b}_{k}^{\ell}$',
-    'attention.self.value.bias': '$\mathbf{b}_{v}^{\ell}$',
-    'attention.output.dense.bias': '$\mathbf{b}_{m_1}^{\ell}$',
-    'attention.output.LayerNorm.bias': '$\mathbf{b}_{LN_1}^{\ell}$',
-    'intermediate.dense.bias': '$\mathbf{b}_{m_2}^{\ell}$',
-    'output.dense.bias': '$\mathbf{b}_{m_3}^{\ell}$',
-    'output.LayerNorm.bias': '$\mathbf{b}_{LN_2}^{\ell}$',
+    'attention.self.query.bias': r'$\mathbf{b}_{q}^{\ell}$',
+    'attention.self.key.bias': r'$\mathbf{b}_{k}^{\ell}$',
+    'attention.self.value.bias': r'$\mathbf{b}_{v}^{\ell}$',
+    'attention.output.dense.bias': r'$\mathbf{b}_{m_1}^{\ell}$',
+    'attention.output.LayerNorm.bias': r'$\mathbf{b}_{LN_1}^{\ell}$',
+    'intermediate.dense.bias': r'$\mathbf{b}_{m_2}^{\ell}$',
+    'output.dense.bias': r'$\mathbf{b}_{m_3}^{\ell}$',
+    'output.LayerNorm.bias': r'$\mathbf{b}_{LN_2}^{\ell}$',
 }
-
 
 class GLUEvaluator:
     """This class contains the functionality for BitFit evaluation on GLUE benchmark.
@@ -384,7 +383,7 @@ class GLUEvaluator:
         if optimizer == 'adam':
             self.optimizer = Adam(self.model.parameters(), lr=learning_rate)
         elif optimizer == 'adamw':
-            self.optimizer = AdamW(self.model.parameters(), lr=learning_rate, correct_bias=True)
+            self.optimizer = AdamW(self.model.parameters(), lr=learning_rate)
         else:
             raise Exception(f"optimizer arg must be in ['adam', 'adamw'], got: {optimizer}")
 
@@ -535,7 +534,7 @@ class GLUEvaluator:
 
         # align the y-axis text to the left
         yax = ax.get_yaxis()
-        pad = max(T.label.get_window_extent().width for T in yax.majorTicks)
+        pad = max(T.label1.get_window_extent().width for T in yax.majorTicks)
         yax.set_tick_params(pad=pad)
 
         if output_path:
